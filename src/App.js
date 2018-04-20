@@ -11,7 +11,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      seats: seatsMap()
+      seats: seatsMap(),
+      finished: false
     }
   }
   
@@ -40,18 +41,21 @@ class App extends Component {
         connector: fredConnector
       })
       .end((res, err) => {
-        if(res) {
+        if(res && !res.errors) {
           this.handleFinishApp(fallback);
         } else {
-          throw err;
+          throw err || res.errors.detail;
         }
       })
   }
   handleFinishApp = (fallback) => {
     if (fallback) { //user is on desktop so only set the flow as done
-      alert("you can close it now");
+      // alert("you can close it now");
+      this.setState({
+        finished: true
+      })
     } else { // user is in mobile so the app can be closed from here
-      document.MessengerExtensions.requestCloseBrowser(function success() {
+      window.MessengerExtensions.requestCloseBrowser(function success() {
         },
         function error(err) {
           // Show error and instruct user to try again
@@ -107,8 +111,17 @@ class App extends Component {
         </div>
     </div> : null
   render() {
-    const { seats } = this.state;
-    return (
+    const { seats, finished } = this.state;
+    return finished ? 
+    <span 
+      style={{
+        display: "flex",
+        width: "100vw",
+        justifyContent: "center",
+        paddingTop: "40px"
+      }}
+    >You can close this page</span> :
+    (
       <div className="App">
         <div className="App-header">
           Select plane seat
