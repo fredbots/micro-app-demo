@@ -61,7 +61,6 @@ class App extends Component {
   }
   handleSelectSeat = ({ num, letter }) => {
     const { seats } = this.state;
-    const numberOfSelected = this.getSelectedSeats().length;
     this.setState({
       seats: {
         ...seats,
