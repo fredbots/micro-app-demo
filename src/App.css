@@ -1,0 +1,75 @@
+.App {
+  text-align: center;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  height: 80px;
+  line-height: 80px;
+  width: 100%;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.number {
+  height: 32px;
+  width: 32px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid white;
+}
+
+
+.seat {
+  height: 32px;
+  width: 32px;
+  margin-top: 10px;
+  background: lightcoral;
+  border: 1px solid white;
+  cursor: not-allowed;
+}
+
+.seat:hover {
+  border: 1px solid orange
+}
+.seat.available {
+  background: lightseagreen;
+  cursor: pointer;
+}
+
+.seat.selected {
+  background: lightsalmon;
+  cursor: pointer;
+}
+
+.submit-button {
+  display: block;
+  position: relative;
+  float: left;
+  width: 120px;
+  cursor: pointer;
+  padding: 0;
+  margin: 10px 20px 10px 0;
+  font-weight: 600;
+  text-align: center;
+  line-height: 50px;
+  color: #FFF;
+  border-radius: 5px;
+  transition: all 0.2s;
+  background: green;
+}
