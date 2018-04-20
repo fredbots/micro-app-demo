@@ -11,7 +11,7 @@ const generateArrayOfBooleans = (size) => {
 
 const generateSeatsMap = () => {
     const letters = ["A", "B", "C","|", "D", "E" ,"F"];
-    const size = 10;
+    const size = 8;
     return letters.reduce((acc, letter) => ({
       ...acc,
       [letter]: generateArrayOfBooleans(size)

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import request from 'superagent';
 import './App.css';
 import seatsMap from './lib/seatsMap';
 import SeatsMap from './components/SeatsMap';
 import { SEAT_STATUS } from './lib/constants';
+import { getParameterByName} from './lib/utils';
+
 
 class App extends Component {
   constructor(props) {
@@ -11,8 +14,50 @@ class App extends Component {
       seats: seatsMap()
     }
   }
+  
+  componentDidMount() {
+    const fallback = getParameterByName("fallback") || undefined;
+    const fredToken = getParameterByName("fred_token") || "thereisnotoken";
+    const fredConnector = getParameterByName("connector") || "thereisnoconnector";
+    let selectedSeats = getParameterByName("seats") || [];
+    console.log(fallback, selectedSeats, fredToken, fredConnector);
+    this.setState({
+      fredConnector,
+      fredToken,
+      fallback
+    })
+  }
   handleSubmit = () => {
-    
+    const seats = this.getSelectedSeats();
+    const { fredToken, fredConnector, fallback } = this.state;
+    request
+      .post("https://connectors.staging1.fredapi.net/microapp/v1/continue")
+      .send({
+        attributes: {
+          seats
+        },  
+        fred_token: fredToken,
+        connector: fredConnector
+      })
+      .end((res, err) => {
+        if(res) {
+          this.handleFinishApp(fallback);
+        } else {
+          throw err;
+        }
+      })
+  }
+  handleFinishApp = (fallback) => {
+    if (fallback) { //user is on desktop so only set the flow as done
+      alert("you can close it now");
+    } else { // user is in mobile so the app can be closed from here
+      document.MessengerExtensions.requestCloseBrowser(function success() {
+        },
+        function error(err) {
+          // Show error and instruct user to try again
+          alert('App could not be finished. Please Try again.');
+      });
+    }
   }
   handleSelectSeat = ({ num, letter }) => {
     const { seats } = this.state;
@@ -67,7 +112,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h2>Select plane seat</h2>
+          Select plane seat
         </div>
         {this.renderSelectedSeats()}
         <div style={{ display: "flex", width: "100%", justifyContent: "center" }} >
