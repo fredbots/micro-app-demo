@@ -1,5 +1,6 @@
 export function getParameterByName(name, url) {
     if (!url) url = window.location.href;
+    // eslint-disable-next-line
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);

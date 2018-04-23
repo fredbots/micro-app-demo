@@ -1,11 +1,11 @@
-.App {
+.app {
   text-align: center;
   width: 100vw;
   overflow: hidden;
   position: relative;
 }
 
-.App-header {
+.app-header {
   height: 80px;
   line-height: 80px;
   width: 100%;
@@ -17,6 +17,27 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.flex-centralize-hor {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.flex-centralize-vert {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .number {
@@ -68,6 +89,13 @@
   border-radius: 5px;
   transition: all 0.2s;
   background: green;
+}
+
+.app-closable-message {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  padding-top: 40px;
 }
 
 h3 {
