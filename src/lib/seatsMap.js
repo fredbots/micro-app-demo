@@ -21,7 +21,7 @@ const generateArrayOfBooleans = (size) => {
 */
 export const generateSeatsMap = () => {
     const letters = ["A", "B", "C","|", "D", "E" ,"F"];
-    const size = 8;
+    const size = 5;
     return letters.reduce((acc, letter) => ({
       ...acc,
       [letter]: generateArrayOfBooleans(size)
@@ -32,16 +32,21 @@ export const generateSeatsMap = () => {
 /* 
     Updates the seat map by selecting the seat provided with its number and letter
 */
-export const selectSeat = (seats, letter, num) => {
+export const selectSeat = (seats, letter, num, force = false) => {
     return {
       ...seats,
-      [letter]: seats[letter].map((seat, idx) => idx === num && seat !== SEAT_STATUS.TAKEN ?
+      [letter]: seats[letter].map((seat, idx) => idx === num && (force || (seat !== SEAT_STATUS.TAKEN)) ?
         (seat !== SEAT_STATUS.SELECTED
           ? SEAT_STATUS.SELECTED :
           SEAT_STATUS.EMPTY)
         : seat)
     };
 }
+
+export const selectMultipleSeats = (seats, seatsToSelect) => 
+    seatsToSelect
+        .reduce((acc, seat) => selectSeat(acc, seat.letter, seat.num, true) , seats);
+
 
 /* 
     Return an array containing the selected seats info
@@ -54,5 +59,16 @@ export const getSelectedSeatsAsArray = (seats) => {
         .map((seat, idx) => ({ letter, num: idx, status: seat }))
         .filter(info => info.status === SEAT_STATUS.SELECTED));
     }, []);
-  }
-  
+}
+
+/*
+  Converts an array of seats ("E0, E4, C2")
+  to an array: 
+  [{letter: "E", num: 0}, {letter: "E", num: 4}, {letter: "C", num: 2}]
+*/
+export const convertSeatsToArray = (selectedSeats) => {
+    return selectedSeats ? selectedSeats.trim().split(", ").map(seat => ({
+      letter: seat[0],
+      num: parseInt(seat[1], 10)
+    })) : [];
+}

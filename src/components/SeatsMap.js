@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { SEAT_STATUS } from '../lib/constants';
 
 const { TAKEN, EMPTY, SELECTED } = SEAT_STATUS;
@@ -86,6 +87,11 @@ class SeatsMap extends React.Component {
             </div>
         )
     }
+}
+
+SeatsMap.propTypes = {
+    seats: PropTypes.object.isRequired,
+    onSeatClick: PropTypes.func
 }
 
 export default SeatsMap;

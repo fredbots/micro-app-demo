@@ -98,6 +98,21 @@
   padding-top: 40px;
 }
 
+.error-message { 
+  display: flex;
+  min-height: 30px;
+  max-height: 80px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+  width: 240px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid red;
+  color: red;
+  margin-bottom: 20px;
+}
+
 h3 {
   margin-top: 0;
 }
+

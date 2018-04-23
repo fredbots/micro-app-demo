@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
-import { generateSeatsMap, selectSeat, getSelectedSeatsAsArray } from './lib/seatsMap';
+import { 
+  generateSeatsMap, 
+  selectSeat, 
+  getSelectedSeatsAsArray,
+  selectMultipleSeats,
+  convertSeatsToArray
+ } from './lib/seatsMap';
 import SeatsMap from './components/SeatsMap';
+import ErrorMessage from './components/ErrorMessage';
 import { getParameterByName } from './lib/utils';
 import { onSubmit, onCloseApp } from './lib/api';
 
@@ -11,22 +18,35 @@ class App extends Component {
     super(props);
     this.state = {
       seats: generateSeatsMap(),
-      finished: false
+      finished: false,
+      errorBeforeFinish: ""
     }
   }
 
   componentDidMount() {
-    // let selectedSeats = getParameterByName("seats") || [];
+    this.selectRecivedSeatsFromUrl();
   }
 
-  handleFinishApp = () => {
+  selectRecivedSeatsFromUrl = () => {
+    let selectedSeats = getParameterByName("seats") || "";
+    const formatedSeats = convertSeatsToArray(selectedSeats);
+    this.handleSelectMultipleSeats(formatedSeats);
+  }
+
+  handleFinishApp = (isError = false) => {
     const fallback = getParameterByName("fallback") || undefined;
-    if (fallback)
-      onCloseApp();
-    else
+    if (fallback) {
+      // if a "fallback=1" is provided it means the user is on a desktop
+      // so the app has to be closed manually
       this.setState({
-        finished: true
+        finished: true,
+        errorBeforeFinish: isError ? "The parameters provided are invalid. You need to re-open the micro app." : ""
       })
+    } else {
+      // if the "fallback=1" isn't provided the user is accessing from a mobile device
+      // to we can call the Messenger Extension API to close the application
+      onCloseApp();
+    } 
   }
 
   handleSubmit = () => {
@@ -41,21 +61,33 @@ class App extends Component {
         }
       )
       .catch((error) => {
-          // error response
-          throw error;
-      })
+          if(error === "close") {
+            console.log('got here')
+            this.handleFinishApp(true);
+          }
+          this.setState({
+            error
+          })
+      });
+  }
+
+  handleSelectMultipleSeats = (seatsToSelect) => {
+    const { seats } = this.state;
+    this.setState({
+      seats: selectMultipleSeats(seats, seatsToSelect)
+    });
   }
 
   handleSelectSeat = ({ num, letter }) => {
     const { seats } = this.state;
     this.setState({
       seats: selectSeat(seats, letter, num)
-    })
+    });
   }
 
   getSelectedSeats = () => {
     const { seats } = this.state;
-    return getSelectedSeatsAsArray(seats)
+    return getSelectedSeatsAsArray(seats);
   }
 
   renderSelectedSeat = (info, idx) => (
@@ -77,14 +109,15 @@ class App extends Component {
       </div> : null
 
   render() {
-    const { seats, finished } = this.state;
+    const { seats, finished, error, errorBeforeFinish } = this.state;
     return finished ?
-      <span className="app-closable-message" >You can close this page</span> :
+      <span className="app-closable-message" >{errorBeforeFinish || "You can close this page"}</span> :
       (
         <div className="app">
           <div className="app-header">
             Select plane seat
-        </div>
+          </div>
+          {error && <ErrorMessage message={error} />}
           {this.renderSelectedSeats()}
           <div className="flex-centralize-hor" >
             <SeatsMap
@@ -106,5 +139,3 @@ class App extends Component {
 }
 
 export default App;
-
-

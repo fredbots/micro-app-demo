@@ -4,22 +4,53 @@ import { getParameterByName } from './utils';
 const FRED_HOOK_URL = "https://connectors.staging1.fredapi.net/microapp/v1/continue"
 
 export const onSubmit = (attributes) => {
-    const fredToken = getParameterByName("fred_token") || "thereisnotoken";
-    const fredConnector = getParameterByName("connector") || "thereisnoconnector";
+    const fredToken = getParameterByName("fred_token") || false;
+    const fredConnector = getParameterByName("connector") || false;
+    const directIds = getParameterByName("direct_ids") || false;
     const requestBody = {
         attributes,
         fred_token: fredToken,
-        connector: fredConnector
+        connector: fredConnector,
+        direct_ids: directIds
     };
     return new Promise((resolve, reject) => {
-        request
+        if(!fredToken || !fredConnector || !directIds) { 
+            /*  
+                Reject promise imediately if any of those parameters weren't provided with
+                the query string. The app must be closed
+            */
+            reject("close");
+        }
+
+        request 
             .post(FRED_HOOK_URL)
             .send(requestBody)
-            .end((res, err) => {
-                if (res && !res.errors)
-                    resolve(res);
-                else
-                    reject(res.errors.detail || err);
+            .end((err, res) => {
+                if(res) {
+                    /*
+                        The request worked with a status 200
+                    */
+                    if(res.text)
+                        return resolve(res.text);
+
+                    /* 
+                        When occurs a 422 error code the app 
+                        must be closed, so it needs a special
+                        handler
+                    */
+                    if(res.statusCode === 422) 
+                        return reject("close");
+                    
+                    /* 
+                        Other generic errors from the server
+                    */
+                    if(res.body && res.body.errors)
+                        return reject(res.body.errors.detail);
+                                            
+                } else if(err){
+                    reject("Server Error");
+                    throw err;
+                }
             })
     })
 }
