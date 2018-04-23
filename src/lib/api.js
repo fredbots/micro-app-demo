@@ -19,7 +19,7 @@ export const onSubmit = (attributes) => {
                 Reject promise imediately if any of those parameters weren't provided with
                 the query string. The app must be closed
             */
-            reject("close");
+            return reject("close");
         }
 
         request 
@@ -30,7 +30,7 @@ export const onSubmit = (attributes) => {
                     /*
                         The request worked with a status 200
                     */
-                    if(res.text)
+                    if(res.status === 200 && res.text)
                         return resolve(res.text);
 
                     /* 
@@ -38,7 +38,7 @@ export const onSubmit = (attributes) => {
                         must be closed, so it needs a special
                         handler
                     */
-                    if(res.statusCode === 422) 
+                    if(res.status === 422) 
                         return reject("close");
                     
                     /* 
@@ -46,7 +46,7 @@ export const onSubmit = (attributes) => {
                     */
                     if(res.body && res.body.errors)
                         return reject(res.body.errors.detail);
-                                            
+
                 } else if(err){
                     reject("Server Error");
                     throw err;

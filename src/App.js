@@ -35,12 +35,18 @@ class App extends Component {
 
   handleFinishApp = (isError = false) => {
     const fallback = getParameterByName("fallback") || undefined;
+    if(isError) {
+      this.setState({
+        finished: true,
+        errorBeforeFinish: "The parameters provided are invalid. You need to re-open the micro app."
+      });
+      return;
+    }
     if (fallback) {
       // if a "fallback=1" is provided it means the user is on a desktop
       // so the app has to be closed manually
       this.setState({
-        finished: true,
-        errorBeforeFinish: isError ? "The parameters provided are invalid. You need to re-open the micro app." : ""
+        finished: true
       })
     } else {
       // if the "fallback=1" isn't provided the user is accessing from a mobile device
@@ -62,12 +68,13 @@ class App extends Component {
       )
       .catch((error) => {
           if(error === "close") {
-            console.log('got here')
             this.handleFinishApp(true);
+          } else {
+            this.setState({
+              error
+            })
           }
-          this.setState({
-            error
-          })
+          
       });
   }
 
