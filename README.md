@@ -1,6 +1,6 @@
 # Micro-App Demo
 
-This is a simple Micro-App example to demonstrate the main steps needed to integrate a Fred bot with Micro-Apps, connected through Fred Builder. 
+This is a simple Micro-App example to demonstrate the main steps needed to integrate a Fred bot with Micro-Apps. 
 
 <p align="center">
   <img src="/public/micro-app-flow.png" width="700"/>
