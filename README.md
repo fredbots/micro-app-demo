@@ -12,7 +12,7 @@ Fred uses the query string to send data to a micro-app. Those are the parameters
 
 - **fred_token:** An unique identifier for each time a micro-app is requested. This token has limited age and after it expires, the micro-app won't be able to send data back to Fred.
 - **connector:** Identifies which chat platform is being used by the user that originated the micro-app call. For example, if the user is interacting over Facebook Messenger, the value of `connector` will be "messenger".
-- **direct_ids:** This value contains routing information about the interaction, such as Fred `channel_id` and `user_id`. It is used to restore the flow if case the token provided gets invalidated.
+- **direct_ids:** This value contains routing information about the interaction, such as Fred `channel_id` and `user_id`. It is used to restore the flow in case the token provided gets invalidated.
 - **fallback:** In practice when `fallback=1`, the user is on Desktop so it's possible to use this information to design the micro-app behavior accordingly. Also, in the case of Facebook Messenger, if the user is on Desktop, the micro-app is responsible to closing the webview overlay.
 
 **Note:** The parameters listed above are required to ensure communication between Fred and the Micro-App. Any other data can be sent through the query string, such as attribute values.
@@ -60,9 +60,8 @@ export const onSubmit = (attributes) => {
                         return resolve(res.text);
 
                     /* 
-                        When 422 error code occurs, the app 
-                        must be closed, so it needs a special
-                        handler
+                        When the 422 error code occurs, the app 
+                        must be closed, so a special handler is needed
                     */
                     if(res.status === 422) 
                         return reject("close");
