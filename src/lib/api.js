@@ -1,7 +1,7 @@
 import request from 'superagent';
 import { getParameterByName } from './utils';
 
-const FRED_HOOK_URL = "https://connectors.staging1.fredapi.net/microapp/v1/continue"
+const FRED_HOOK_URL = "https://api-connectors.fredbots.com/microapp/v1/continue"
 
 export const onSubmit = (attributes) => {
     const fredToken = getParameterByName("fred_token") || false;
@@ -14,15 +14,15 @@ export const onSubmit = (attributes) => {
         direct_ids: directIds
     };
     return new Promise((resolve, reject) => {
-        if(!fredToken || !fredConnector || !directIds) { 
-            /*  
+        if(!fredToken || !fredConnector || !directIds) {
+            /*
                 Reject promise imediately if any of those parameters weren't provided with
                 the query string. The app must be closed
             */
             return reject("close");
         }
 
-        request 
+        request
             .post(FRED_HOOK_URL)
             .send(requestBody)
             .end((err, res) => {
@@ -33,15 +33,15 @@ export const onSubmit = (attributes) => {
                     if(res.status === 200 && res.text)
                         return resolve(res.text);
 
-                    /* 
-                        When occurs a 422 error code the app 
+                    /*
+                        When occurs a 422 error code the app
                         must be closed, so it needs a special
                         handler
                     */
-                    if(res.status === 422) 
+                    if(res.status === 422)
                         return reject("close");
-                    
-                    /* 
+
+                    /*
                         Other generic errors from the server
                     */
                     if(res.body && res.body.errors)
